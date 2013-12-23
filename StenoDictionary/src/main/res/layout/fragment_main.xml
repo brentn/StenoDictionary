@@ -12,6 +12,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/edittext"
+        android:id="@+id/lookup"
         android:hint="Lookup"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/strokes"
+        android:background="@drawable/edittext"
+        android:layout_below="@+id/lookup"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:textColor="@android:color/holo_blue_light" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:id="@+id/progressbar"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp" />
 
 </RelativeLayout>

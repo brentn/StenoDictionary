@@ -3,7 +3,7 @@
 
     <string name="app_name">Steno Dictionary</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Choose Dictionaries</string>
     <string name="dictionaries" >Select Dictionaries</string>
     <string name="add_dictionary">Add Dictionary</string>
 
