@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Steno Dictionary</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">Steno Lookup</string>
     <string name="action_settings">Choose Dictionaries</string>
     <string name="dictionaries" >Select Dictionaries</string>
-    <string name="add_dictionary">Add Dictionary</string>
+    <string name="add_dictionary">Add Dictionary</string><string name="loading">Dictionary loading</string>
 
 </resources>

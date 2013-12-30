@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.LinkedList;
 import java.util.Queue;
 
 /**
@@ -67,6 +68,16 @@ public class Dictionary {
         return mDictionary.get(english);
     }
 
+    public Queue<String> possibilities(String partial_word, int limit) {
+        if (partial_word.length()<3) return null;
+        Queue<String> result = new LinkedList<String>();
+        for (String possibility : mDictionary.prefixMatch(partial_word)) {
+            result.add(possibility);
+            if (result.size() >= limit) break;
+        }
+        return result;
+    }
+
     public int size() { return mDictionary.size(); }
 
     public void unload() {
@@ -106,6 +117,9 @@ public class Dictionary {
                                 english = fields[3];
                                 forwardLookup.put(stroke, english);
                                 loaded++;
+                                if (loaded%update_interval==0) {
+                                    onProgressUpdate(loaded);
+                                }
                             }
                         }
                         lines.close();
@@ -120,7 +134,7 @@ public class Dictionary {
             StrokeComparator compareByStrokeLength = new StrokeComparator();
             for (String key : forwardLookup.keys()) {
                 english = forwardLookup.get(key);
-                strokes = mDictionary.get(key);
+                strokes = mDictionary.get(english);
                 if (strokes == null) strokes = new PriorityQueue<String>(3, compareByStrokeLength);
                 strokes.add(key);
                 mDictionary.put(english, strokes);

@@ -6,32 +6,90 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity$PlaceholderFragment">
+    tools:context=".MainActivity$PlaceholderFragment"
+    android:focusable="true"
+    android:clickable="false">
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/edittext"
         android:id="@+id/lookup"
-        android:hint="Lookup"/>
+        android:hint="Lookup"
+        android:singleLine="true"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+
+    <ImageButton
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/clear_button"
+        android:clickable="true"
+        android:cropToPadding="false"
+        android:focusable="false"
+        android:layout_alignTop="@id/lookup"
+        android:layout_alignRight="@id/lookup"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_menu_close_clear_cancel"
+        android:adjustViewBounds="true"
+        android:background="@android:color/transparent" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/strokes"
-        android:background="@drawable/edittext"
-        android:layout_below="@+id/lookup"
+        android:layout_below="@id/lookup"
         android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
-        android:textColor="@android:color/holo_blue_light" />
+        android:textColor="#ff33b5e5"
+        android:autoText="false" />
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="2px"
+        android:layout_below="@id/strokes"
+        android:id="@+id/divider"
+        android:background="#ff669900"></FrameLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="15dp"
-        android:id="@+id/progressbar"
-        android:layout_alignParentTop="true"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/possibilities"
+        android:layout_below="@id/divider"
         android:layout_marginTop="10dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:paddingTop="10dp"
+        android:baselineAligned="false"
+        android:background="@android:color/black"
+        android:alpha=".6"
+        android:id="@+id/overlay"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/loading"
+            android:id="@+id/textView"
+            android:textColor="#ff33b5e5" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressbar"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="2dp"
+            android:focusable="false"
+            android:clickable="true"
+            android:paddingLeft="8dp" />
+    </LinearLayout>
 
 </RelativeLayout>

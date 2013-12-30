@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,6 +30,7 @@ public class SelectDictionaryActivity extends ListActivity {
 
     private static final String TAG = "StenoDictionary";
     private static final int FILE_SELECT_CODE = 2;
+    private static final List<String> FILE_FORMATS = Arrays.asList(".json");
 
     private SharedPreferences prefs;
     private boolean changed = false;
@@ -56,8 +58,7 @@ public class SelectDictionaryActivity extends ListActivity {
     protected void onStop() {
         super.onStop();
         if (changed) {
-            ((StenoApp) getApplication()).loadDictionaries();
-            changed = false;
+            ((StenoApp) getApplication()).unloadDictionary();
         }
     }
 
@@ -92,11 +93,16 @@ public class SelectDictionaryActivity extends ListActivity {
                     String path = getPath(this, uri);
                     Log.d(TAG, "File Path: " + path);
                     //update list
-                    String file = path.substring(path.lastIndexOf("/")+1);
-                    ((ArrayAdapter<String>) getListAdapter()).add(file);
-                    //update preference
-                    String dictionaries = prefs.getString(StenoApp.KEY_DICTIONARIES, "");
-                    prefs.edit().putString(StenoApp.KEY_DICTIONARIES, dictionaries+StenoApp.DELIMITER+path).commit();
+                    String extension = path.substring(path.lastIndexOf(".")).toLowerCase();
+                    if (FILE_FORMATS.contains(extension)) {
+                        String file = path.substring(path.lastIndexOf("/")+1);
+                        ((ArrayAdapter<String>) getListAdapter()).add(file);
+                        //update preference
+                        String dictionaries = prefs.getString(StenoApp.KEY_DICTIONARIES, "");
+                        prefs.edit().putString(StenoApp.KEY_DICTIONARIES, dictionaries+StenoApp.DELIMITER+path).commit();
+                    } else {
+                        Toast.makeText(this, "Invalid File Format", Toast.LENGTH_SHORT);
+                    }
                 }
                 break;
         }
