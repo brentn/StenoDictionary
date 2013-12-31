@@ -124,8 +124,8 @@ public class Dictionary {
                                     addToDictionary(stroke, english);
                                 } else {
                                     forwardLookup.put(stroke, english);
+                                    incrementSize();
                                 }
-                                incrementSize();
                             }
                         }
                         lines.close();

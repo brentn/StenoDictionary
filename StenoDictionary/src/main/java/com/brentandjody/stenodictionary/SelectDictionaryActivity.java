@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,14 +33,17 @@ public class SelectDictionaryActivity extends ListActivity {
 
     private SharedPreferences prefs;
     private boolean changed = false;
+    private ArrayAdapter<String> adapter;
+    private List<String> list = new ArrayList<String>();
+    private List<String> pathList = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         setContentView(R.layout.dictionary_list);
-        List<String> list = loadDictionaryList();
-        ListAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
+        loadDictionaryList();
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
         Button addButton = new Button(this);
         addButton.setText(getString(R.string.add_dictionary));
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +57,7 @@ public class SelectDictionaryActivity extends ListActivity {
     }
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
         super.onStop();
         if (changed) {
             ((StenoApp) getApplication()).unloadDictionary();
@@ -65,7 +67,6 @@ public class SelectDictionaryActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView listview, View v, int position, long id) {
         super.onListItemClick(listview, v, position, id);
-        changed=true;
         AlertDialog.Builder adb=new AlertDialog.Builder(SelectDictionaryActivity.this);
         adb.setTitle("Remove Dictionary?");
         adb.setMessage("Are you sure you want to remove this dictionary?");
@@ -85,7 +86,6 @@ public class SelectDictionaryActivity extends ListActivity {
         switch (requestCode) {
             case FILE_SELECT_CODE:
                 if (resultCode == RESULT_OK) {
-                    changed=true;
                     // Get the Uri of the selected file
                     Uri uri = data.getData();
                     Log.d(TAG, "File Uri: " + uri.toString());
@@ -96,14 +96,11 @@ public class SelectDictionaryActivity extends ListActivity {
                     String extension = path.substring(path.lastIndexOf(".")).toLowerCase();
                     if (FILE_FORMATS.contains(extension)) {
                         String file = path.substring(path.lastIndexOf("/")+1);
-                        ((ArrayAdapter<String>) getListAdapter()).add(file);
-                        //update preference
-                        String dictionaries = prefs.getString(StenoApp.KEY_DICTIONARIES, "");
-                        if (dictionaries.isEmpty()) {
-                            prefs.edit().putString(StenoApp.KEY_DICTIONARIES, path).commit();
-                        } else {
-                            prefs.edit().putString(StenoApp.KEY_DICTIONARIES, dictionaries+StenoApp.DELIMITER+path).commit();
-                        }
+                        list.add(file);
+                        pathList.add(path);
+                        changed=true;
+                        adapter.notifyDataSetChanged();
+                        updatePreference();
                     } else {
                         Toast.makeText(this, "Invalid File Format", Toast.LENGTH_SHORT);
                     }
@@ -114,32 +111,35 @@ public class SelectDictionaryActivity extends ListActivity {
     }
 
 
-    private List<String> loadDictionaryList() {
-        List<String> result = new ArrayList<String>();
+    private void loadDictionaryList() {
         String dictionaries = prefs.getString(StenoApp.KEY_DICTIONARIES, "");
         for (String dictionary : dictionaries.split(StenoApp.DELIMITER)) {
             if (!dictionary.trim().isEmpty()) {
-                result.add(dictionary.substring(dictionary.lastIndexOf("/")+1));
+                pathList.add(dictionary);
+                list.add(dictionary.substring(dictionary.lastIndexOf("/") + 1));
             }
         }
-        return result;
     }
 
     private void removeDictionary(int pos) {
-        String[] prefs_dicts = prefs.getString(StenoApp.KEY_DICTIONARIES, "").split(StenoApp.DELIMITER);
-        ((ArrayAdapter<String>) getListAdapter()).remove(prefs_dicts[pos]);
-        prefs_dicts[pos] = "";
-        String dicts = "";
-        for (String d : prefs_dicts) {
+        list.remove(pos);
+        pathList.remove(pos);
+        changed = true;
+        adapter.notifyDataSetChanged();
+        updatePreference();
+    }
+
+    private void updatePreference() {
+        String dictionaries = "";
+        for (String d : pathList) {
             if (!d.trim().isEmpty()) {
-                dicts += StenoApp.DELIMITER + d;
+                dictionaries += StenoApp.DELIMITER + d;
             }
         }
-        //dicts now contains a string, prefixed with an extra DELIMITER - use substring(1) to skip
-        if (!dicts.isEmpty()) {
-            dicts = dicts.substring(1);
+        if (!dictionaries.isEmpty()) { //list is prefixed with DELIMITER
+            dictionaries = dictionaries.substring(1);
         }
-        prefs.edit().putString(StenoApp.KEY_DICTIONARIES, dicts).commit();
+        prefs.edit().putString(StenoApp.KEY_DICTIONARIES, dictionaries).commit();
     }
 
     private void addDictionary() {
