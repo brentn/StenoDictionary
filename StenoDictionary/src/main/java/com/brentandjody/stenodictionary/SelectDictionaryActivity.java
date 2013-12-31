@@ -99,7 +99,11 @@ public class SelectDictionaryActivity extends ListActivity {
                         ((ArrayAdapter<String>) getListAdapter()).add(file);
                         //update preference
                         String dictionaries = prefs.getString(StenoApp.KEY_DICTIONARIES, "");
-                        prefs.edit().putString(StenoApp.KEY_DICTIONARIES, dictionaries+StenoApp.DELIMITER+path).commit();
+                        if (dictionaries.isEmpty()) {
+                            prefs.edit().putString(StenoApp.KEY_DICTIONARIES, path).commit();
+                        } else {
+                            prefs.edit().putString(StenoApp.KEY_DICTIONARIES, dictionaries+StenoApp.DELIMITER+path).commit();
+                        }
                     } else {
                         Toast.makeText(this, "Invalid File Format", Toast.LENGTH_SHORT);
                     }
@@ -122,8 +126,8 @@ public class SelectDictionaryActivity extends ListActivity {
     }
 
     private void removeDictionary(int pos) {
-        getListView().removeViews(pos, 1);
         String[] prefs_dicts = prefs.getString(StenoApp.KEY_DICTIONARIES, "").split(StenoApp.DELIMITER);
+        ((ArrayAdapter<String>) getListAdapter()).remove(prefs_dicts[pos]);
         prefs_dicts[pos] = "";
         String dicts = "";
         for (String d : prefs_dicts) {

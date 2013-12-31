@@ -75,9 +75,7 @@ public class MainActivity extends Activity implements Dictionary.OnDictionaryLoa
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case SELECT_DICTIONARY_ACTIVITY:
-                if (resultCode == RESULT_OK) {
-                    loadDictionary();
-                }
+                loadDictionary();
                 break;
         }
     }
