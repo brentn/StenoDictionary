@@ -88,22 +88,27 @@ public class Dictionary {
     private class JsonLoader extends AsyncTask<String, Integer, Long> {
         private int loaded;
         private int total_size;
-        private TST<String> forwardLookup;
         private ProgressBar progressBar;
+        private int update_interval;
 
         public JsonLoader(ProgressBar progress, int size) {
             progressBar = progress;
             total_size = size;
-            forwardLookup = new TST<String>();
+            update_interval = total_size/100;
+            if (update_interval==0)
+                update_interval = 1;
         }
 
         protected Long doInBackground(String... filenames) {
             loaded = 0;
-            unload();
-            int update_interval = total_size/100;
-            if (update_interval == 0) update_interval=1;
+            boolean simple = (filenames.length==1); // if there is only 1 dictionary, load in 1 pass
+            if (simple) {
+                Log.d(TAG, "Loading in simple mode");
+            }
             String line, stroke, english;
             String[] fields;
+            unload();
+            TST<String> forwardLookup = new TST<String>();
             for (String filename : filenames) {
                 if (!filename.isEmpty()) {
                     try {
@@ -115,11 +120,12 @@ public class Dictionary {
                             if ((fields.length >= 3) && (fields[3].length() > 0)) {
                                 stroke = fields[1];
                                 english = fields[3];
-                                forwardLookup.put(stroke, english);
-                                loaded++;
-                                if (loaded%update_interval==0) {
-                                    onProgressUpdate(loaded);
+                                if (simple) {
+                                    addToDictionary(stroke, english);
+                                } else {
+                                    forwardLookup.put(stroke, english);
                                 }
+                                incrementSize();
                             }
                         }
                         lines.close();
@@ -129,22 +135,31 @@ public class Dictionary {
                     }
                 }
             }
-            // Build reverse lookup
-            Queue<String> strokes;
-            StrokeComparator compareByStrokeLength = new StrokeComparator();
-            for (String key : forwardLookup.keys()) {
-                english = forwardLookup.get(key);
-                strokes = mDictionary.get(english);
-                if (strokes == null) strokes = new PriorityQueue<String>(3, compareByStrokeLength);
-                strokes.add(key);
-                mDictionary.put(english, strokes);
-                loaded ++;
-                if (loaded%update_interval==0) {
-                    onProgressUpdate(loaded);
+            if (!simple) {
+                // Build reverse lookup
+                for (String s : forwardLookup.keys()) {
+                    english = forwardLookup.get(s);
+                    addToDictionary(english, s);
                 }
+                forwardLookup = null; // garbage collect
             }
-            forwardLookup = null; // garbage collect
             return (long) loaded;
+        }
+
+        private void addToDictionary(String stroke, String english) {
+            StrokeComparator compareByStrokeLength = new StrokeComparator();
+            Queue<String> strokes = mDictionary.get(english);
+            if (strokes == null)
+                strokes = new PriorityQueue<String>(3, compareByStrokeLength);
+            strokes.add(stroke);
+            mDictionary.put(english, strokes);
+            incrementSize();
+        }
+
+        private void incrementSize() {
+            loaded++;
+            if (loaded%update_interval==0)
+                onProgressUpdate(loaded);
         }
 
         @Override

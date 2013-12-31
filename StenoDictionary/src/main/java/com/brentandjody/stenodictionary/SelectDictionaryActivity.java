@@ -16,7 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,6 +24,7 @@ import java.util.List;
 
 /**
  * Created by brent on 19/12/13.
+ * Select one or multiple .json dictionaries to load
  */
 public class SelectDictionaryActivity extends ListActivity {
 
@@ -150,8 +150,7 @@ public class SelectDictionaryActivity extends ListActivity {
             startActivityForResult(
                     Intent.createChooser(intent, "Select your .json dictionary file"),FILE_SELECT_CODE);
         } catch (android.content.ActivityNotFoundException ex) {
-            // Potentially direct the user to the Market with a Dialog
-            Toast.makeText(this, "Please install a File Manager.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please install a File Manager (or DropBox) to access your dictionary.", Toast.LENGTH_LONG).show();
         }
     }
 
