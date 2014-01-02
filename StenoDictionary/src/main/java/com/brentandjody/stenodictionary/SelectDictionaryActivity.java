@@ -2,11 +2,9 @@ package com.brentandjody.stenodictionary;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -89,11 +87,14 @@ public class SelectDictionaryActivity extends ListActivity {
                     // Get the Uri of the selected file
                     Uri uri = data.getData();
                     Log.d(TAG, "File Uri: " + uri.toString());
+
                     // Get the path
-                    String path = getPath(this, uri);
+                    String path = uri.getPath();
+
                     Log.d(TAG, "File Path: " + path);
                     //update list
-                    String extension = path.substring(path.lastIndexOf(".")).toLowerCase();
+                    String extension = "";
+                    if (path.contains(".")) extension = path.substring(path.lastIndexOf(".")).toLowerCase();
                     if (FILE_FORMATS.contains(extension)) {
                         String file = path.substring(path.lastIndexOf("/")+1);
                         list.add(file);
@@ -152,26 +153,6 @@ public class SelectDictionaryActivity extends ListActivity {
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(this, "Please install a File Manager (or DropBox) to access your dictionary.", Toast.LENGTH_LONG).show();
         }
-    }
-
-    public static String getPath(Context context, Uri uri) {
-        if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = { "_data" };
-            Cursor cursor;
-            try {
-                cursor = context.getContentResolver().query(uri, projection, null, null, null);
-                int column_index = cursor.getColumnIndexOrThrow("_data");
-                if (cursor.moveToFirst()) {
-                    return cursor.getString(column_index);
-                }
-            } catch (Exception e) {
-                // Eat it
-            }
-        }
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-        return null;
     }
 
 }
