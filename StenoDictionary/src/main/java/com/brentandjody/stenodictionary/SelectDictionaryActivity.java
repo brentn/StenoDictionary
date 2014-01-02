@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,8 +90,10 @@ public class SelectDictionaryActivity extends ListActivity {
                     // Get the Uri of the selected file
                     Uri uri = data.getData();
                     Log.d(TAG, "File Uri: " + uri.toString());
+
                     // Get the path
                     String path = getPath(this, uri);
+
                     Log.d(TAG, "File Path: " + path);
                     //update list
                     String extension = path.substring(path.lastIndexOf(".")).toLowerCase();
@@ -165,7 +168,11 @@ public class SelectDictionaryActivity extends ListActivity {
                     return cursor.getString(column_index);
                 }
             } catch (Exception e) {
-                // Eat it
+                // try a hack
+                File myFile = new File(uri.toString());
+                String path = myFile.getAbsolutePath();
+                if (path.contains("/storage/")) path = path.substring(path.indexOf("/storage/"));
+                return path;
             }
         }
         else if ("file".equalsIgnoreCase(uri.getScheme())) {
