@@ -63,12 +63,18 @@ public class MainActivity extends Activity implements Dictionary.OnDictionaryLoa
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, SelectDictionaryActivity.class);
-            startActivityForResult(intent, SELECT_DICTIONARY_ACTIVITY);
-            return true;
+        Intent intent;
+        switch (id) {
+            case R.id.action_choose_dictionary:
+                intent = new Intent(this, SelectDictionaryActivity.class);
+                startActivityForResult(intent, SELECT_DICTIONARY_ACTIVITY);
+                break;
+            case R.id.action_about:
+                intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                break;
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
