@@ -121,15 +121,10 @@ public class MainActivity extends Activity implements Dictionary.OnDictionaryLoa
     }
 
     private void loadDictionary() {
-        if (App.getDictionaryNames().length < 1) {
-            Intent intent = new Intent(this, SelectDictionaryActivity.class);
-            startActivityForResult(intent, SELECT_DICTIONARY_ACTIVITY);
-        } else {
-            ProgressBar progressbar = (ProgressBar) findViewById(R.id.progressbar);
-            progressbar.setProgress(0);
-            LinearLayout overlay = (LinearLayout) findViewById(R.id.overlay);
-            mDictionary = App.getDictionary(this, lookup, overlay, progressbar);
-        }
+        ProgressBar progressbar = (ProgressBar) findViewById(R.id.progressbar);
+        progressbar.setProgress(0);
+        LinearLayout overlay = (LinearLayout) findViewById(R.id.overlay);
+        mDictionary = App.getDictionary(this, lookup, overlay, progressbar);
     }
 
     private void lookup_strokes(String text) {

@@ -50,7 +50,7 @@ public class StenoApp extends android.app.Application {
 
     public void loadDictionary(ProgressBar progressbar) {
         int size = prefs.getInt(KEY_DICTIONARY_SIZE, 100000);
-        mDictionary.load(getDictionaryNames(), progressbar, size);
+        mDictionary.load(getDictionaryNames(), getAssets(), progressbar, size);
     }
 
     private boolean isDictionaryLoaded() {

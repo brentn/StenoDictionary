@@ -2,6 +2,7 @@ package com.brentandjody.stenodictionary;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -11,10 +12,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.PriorityQueue;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
@@ -42,7 +45,7 @@ public class Dictionary {
         onDictionaryLoadedListener = listener;
     }
 
-    public void load(String[] filenames, ProgressBar progressBar, int size) {
+    public void load(String[] filenames, AssetManager assetManager, ProgressBar progressBar, int size) {
         Log.d(TAG, "loading dictionary");
         for (String filename : filenames) {
             if (filename.contains(".")) {
@@ -61,7 +64,7 @@ public class Dictionary {
                 }
             }
         }
-        new JsonLoader(progressBar, size).execute(filenames);
+        new JsonLoader(assetManager, progressBar, size).execute(filenames);
     }
 
     public Queue<String> lookup(String english) {
@@ -90,8 +93,10 @@ public class Dictionary {
         private int total_size;
         private ProgressBar progressBar;
         private int update_interval;
+        private AssetManager assetManager;
 
-        public JsonLoader(ProgressBar progress, int size) {
+        public JsonLoader(AssetManager am, ProgressBar progress, int size) {
+            assetManager = am;
             progressBar = progress;
             total_size = size;
             update_interval = total_size/100;
@@ -101,47 +106,71 @@ public class Dictionary {
 
         protected Long doInBackground(String... filenames) {
             loaded = 0;
-            boolean simple = (filenames.length==1); // if there is only 1 dictionary, load in 1 pass
+            progressBar.setProgress(0);
+            boolean simple = (filenames.length<=1); // if there is only 1 dictionary, load in 1 pass
             if (simple) {
                 Log.d(TAG, "Loading in simple mode");
             }
             String line, stroke, english;
             String[] fields;
             unload();
-            TST<String> forwardLookup = new TST<String>();
-            for (String filename : filenames) {
-                if (!filename.isEmpty()) {
-                    try {
-                        File file = new File(filename);
-                        FileReader reader = new FileReader(file);
-                        BufferedReader lines = new BufferedReader(reader);
-                        while ((line = lines.readLine()) != null) {
-                            fields = line.split("\"");
-                            if ((fields.length >= 3) && (fields[3].length() > 0)) {
-                                stroke = fields[1];
-                                english = fields[3];
-                                if (simple) {
-                                    addToDictionary(stroke, english);
-                                } else {
-                                    forwardLookup.put(stroke, english);
-                                    incrementSize();
+            //if no personal dictionaries are defined, load the default
+            if (filenames.length==0) {
+                try {
+                    InputStream filestream = assetManager.open("dict.json");
+                    InputStreamReader reader = new InputStreamReader(filestream);
+                    BufferedReader lines = new BufferedReader(reader);
+                    while ((line = lines.readLine()) != null) {
+                        fields = line.split("\"");
+                        if ((fields.length > 3) && (fields[3].length() > 0)) {
+                            stroke = fields[1];
+                            english = fields[3];
+                            addToDictionary(stroke, english);
+                            incrementSize();
+                        }
+                    }
+                    lines.close();
+                    reader.close();
+                    filestream.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Error loading default dictionary asset");
+                }
+            } else {
+                TST<String> forwardLookup = new TST<String>();
+                for (String filename : filenames) {
+                    if (!filename.isEmpty()) {
+                        try {
+                            File file = new File(filename);
+                            FileReader reader = new FileReader(file);
+                            BufferedReader lines = new BufferedReader(reader);
+                            while ((line = lines.readLine()) != null) {
+                                fields = line.split("\"");
+                                if ((fields.length > 3) && (fields[3].length() > 0)) {
+                                    stroke = fields[1];
+                                    english = fields[3];
+                                    if (simple) {
+                                        addToDictionary(stroke, english);
+                                    } else {
+                                        forwardLookup.put(stroke, english);
+                                        incrementSize();
+                                    }
                                 }
                             }
+                            lines.close();
+                            reader.close();
+                        } catch (IOException e) {
+                            Log.e(TAG, "Dictionary File: " + filename + " could not be found");
                         }
-                        lines.close();
-                        reader.close();
-                    } catch (IOException e) {
-                        System.err.println("Dictionary File: " + filename + " could not be found");
                     }
                 }
-            }
-            if (!simple) {
-                // Build reverse lookup
-                for (String s : forwardLookup.keys()) {
-                    english = forwardLookup.get(s);
-                    addToDictionary(english, s);
+                if (!simple) {
+                    // Build reverse lookup
+                    for (String s : forwardLookup.keys()) {
+                        english = forwardLookup.get(s);
+                        addToDictionary(english, s);
+                    }
+                    forwardLookup = null; // garbage collect
                 }
-                forwardLookup = null; // garbage collect
             }
             return (long) loaded;
         }
