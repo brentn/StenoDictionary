@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/aboutText"
-            android:textAppearance="@android:style/TextAppearance.Holo.Large" />
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
     </ScrollView>
 
 </LinearLayout>
