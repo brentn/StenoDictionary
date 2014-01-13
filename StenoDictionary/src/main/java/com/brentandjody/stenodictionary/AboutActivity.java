@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 /**
- * Created by brentn on 04/01/14.
+ * Created by brent on 04/01/14.
  */
 public class AboutActivity extends Activity {
     @Override
@@ -18,5 +19,6 @@ public class AboutActivity extends Activity {
         String formattedText = getString(R.string.about_text);
         Spanned result = Html.fromHtml(formattedText);
         view.setText(result);
+        view.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }
