@@ -2,13 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity$PlaceholderFragment"
     android:focusable="true"
-    android:clickable="false">
+    android:clickable="false"
+    android:padding="12dp">
 
     <EditText
         android:layout_width="match_parent"
@@ -18,7 +15,8 @@
         android:hint="Lookup"
         android:singleLine="true"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp" />
+        android:paddingRight="10dp"
+        android:layout_marginTop="12dp" />
 
     <ImageButton
         android:layout_width="40dp"
@@ -34,31 +32,46 @@
         android:adjustViewBounds="true"
         android:background="@android:color/transparent" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/strokes"
-        android:layout_below="@id/lookup"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="10dp"
-        android:textColor="#ff33b5e5"
-        android:autoText="false" />
-
-    <FrameLayout
+    <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="2px"
-        android:layout_below="@id/strokes"
-        android:id="@+id/divider"
-        android:background="#ff669900"></FrameLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/possibilities"
-        android:layout_below="@id/divider"
-        android:layout_marginTop="10dp" />
+        android:layout_below="@id/lookup"
+        android:id="@+id/scrollView" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:id="@+id/strokes"
+                android:layout_below="@id/lookup"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:textColor="#ff33b5e5"
+                android:autoText="false" />
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="2px"
+                android:layout_below="@id/strokes"
+                android:id="@+id/divider"
+                android:background="#ff669900">
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/possibilities"
+                android:layout_below="@id/divider"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -71,7 +84,8 @@
         android:id="@+id/overlay"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:layout_marginTop="12dp">
 
         <TextView
             android:layout_width="wrap_content"

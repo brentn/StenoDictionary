@@ -72,11 +72,17 @@ public class Dictionary {
     }
 
     public Queue<String> possibilities(String partial_word, int limit) {
-        if (partial_word.length()<3) return null;
+        if (partial_word.length()<1) return null;
         Queue<String> result = new LinkedList<String>();
         for (String possibility : mDictionary.prefixMatch(partial_word)) {
             result.add(possibility);
             if (result.size() >= limit) break;
+        }
+        if (result.size() < limit) {
+            for (String possibility : mDictionary.prefixMatch("{"+partial_word)) {
+                result.add(possibility);
+                if (result.size() >= limit) break;
+            }
         }
         return result;
     }

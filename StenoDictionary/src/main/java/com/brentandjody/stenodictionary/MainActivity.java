@@ -106,6 +106,8 @@ public class MainActivity extends Activity implements Dictionary.OnDictionaryLoa
         clearView(output);
         if (lookup.getText().length() > 0)
             lookup_strokes(lookup.getText().toString());
+        else
+            clearPossibilities();
     }
 
     private void clearView(TextView v) {
