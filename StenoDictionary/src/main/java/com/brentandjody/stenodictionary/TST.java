@@ -14,8 +14,7 @@ import java.util.Queue;
  *  Remarks
  *  --------
  *    - can't use a key that is the empty string ""
- *    - adding duplicate key replaces the old value
- *    - MODIFIED to make it case insensitive
+ *    - adding duplicate key replaces the old value 
  *
  */
 
@@ -76,15 +75,8 @@ public class TST<Value> {
             x = new Node();
             x.c = c;
         }
-
-        // make the search case insensitive
-        char c1 = c;
-        if (c1 <= 'Z' && c1 >= 'A') c1 = Character.toLowerCase(c1);
-        char c2 = x.c;
-        if (c2 <= 'Z' && c2 >= 'A') c2 = Character.toLowerCase(c2);
-
-        if      (c1 < c2)             x.left  = put(x.left,  s, val, d);
-        else if (c1 > c2)             x.right = put(x.right, s, val, d);
+        if      (c < x.c)             x.left  = put(x.left,  s, val, d);
+        else if (c > x.c)             x.right = put(x.right, s, val, d);
         else if (d < s.length() - 1)  x.mid   = put(x.mid,   s, val, d+1);
         else                          x.val   = val;
         return x;
