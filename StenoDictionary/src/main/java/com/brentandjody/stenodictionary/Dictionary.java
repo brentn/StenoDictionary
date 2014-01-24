@@ -68,7 +68,7 @@ public class Dictionary {
     }
 
     public Queue<String> lookup(String english) {
-        return mDictionary.get(english);
+        return mDictionary.get(english, true);
     }
 
     public Queue<String> possibilities(String partial_word, int limit) {
@@ -157,7 +157,7 @@ public class Dictionary {
                                     if (simple) {
                                         addToDictionary(stroke, english);
                                     } else {
-                                        forwardLookup.put(stroke, english);
+                                        forwardLookup.put(stroke, english, false);
                                     }
                                     incrementSize();
                                 }
@@ -172,8 +172,8 @@ public class Dictionary {
                 if (!simple) {
                     // Build reverse lookup
                     for (String s : forwardLookup.keys()) {
-                        english = forwardLookup.get(s);
-                        addToDictionary(english, s);
+                        english = forwardLookup.get(s, false);
+                        addToDictionary(s, english);
                     }
                     forwardLookup = null; // garbage collect
                 }
@@ -183,11 +183,11 @@ public class Dictionary {
 
         private void addToDictionary(String stroke, String english) {
             StrokeComparator compareByStrokeLength = new StrokeComparator();
-            Queue<String> strokes = mDictionary.get(english);
+            Queue<String> strokes = mDictionary.get(english, true);
             if (strokes == null)
                 strokes = new PriorityQueue<String>(3, compareByStrokeLength);
             strokes.add(stroke);
-            mDictionary.put(english, strokes);
+            mDictionary.put(english, strokes, true);
             incrementSize();
         }
 

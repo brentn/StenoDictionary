@@ -40,8 +40,17 @@ public class TST<Value> {
         return get(key) != null;
     }
 
+    public boolean contains(String key, boolean lowercase) {
+        return get(key, lowercase) != null;
+    }
+
     public Value get(String key) {
+        return get(key, false);
+    }
+
+    public Value get(String key, boolean lowercase) {
         if (key == null) throw new NullPointerException();
+        if (lowercase) key=key.toLowerCase();
         if (key.length() == 0) throw new IllegalArgumentException("key must have length >= 1");
         Node x = get(root, key, 0);
         if (x == null) return null;
@@ -65,19 +74,24 @@ public class TST<Value> {
      * Insert string s into the symbol table.
      **************************************************************/
     public void put(String s, Value val) {
-        if (!contains(s)) N++;
-        root = put(root, s, val, 0);
+        put(s, val, false);
     }
 
-    private Node put(Node x, String s, Value val, int d) {
+    public void put(String s, Value val, boolean lowercase) {
+        if (!contains(s, lowercase)) N++;
+        root = put(root, s, val, 0, lowercase);
+    }
+
+    private Node put(Node x, String s, Value val, int d, boolean lowercase) {
         char c = s.charAt(d);
+        if (lowercase && c <= 'Z' && c >= 'A') c=Character.toLowerCase(c);
         if (x == null) {
             x = new Node();
             x.c = c;
         }
-        if      (c < x.c)             x.left  = put(x.left,  s, val, d);
-        else if (c > x.c)             x.right = put(x.right, s, val, d);
-        else if (d < s.length() - 1)  x.mid   = put(x.mid,   s, val, d+1);
+        if      (c < x.c)             x.left  = put(x.left,  s, val, d, lowercase);
+        else if (c > x.c)             x.right = put(x.right, s, val, d, lowercase);
+        else if (d < s.length() - 1)  x.mid   = put(x.mid,   s, val, d+1, lowercase);
         else                          x.val   = val;
         return x;
     }
